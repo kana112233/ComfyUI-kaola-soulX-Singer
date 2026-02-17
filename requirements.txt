@@ -33,7 +33,8 @@ sentencepiece
 g2p_en
 kaldiio
 resampy
-datasets
+datasets>=2.16.0
+pyarrow>=14.0.0
 ipython
 
 
