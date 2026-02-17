@@ -21,7 +21,7 @@ safetensors
 transformers>=4.36.0
 
 # Misc
-setuptools
+setuptools<80.0.0
 beartype
 omegaconf
 packaging

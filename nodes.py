@@ -309,8 +309,8 @@ class SoulXSingerPreprocess:
             },
         }
 
-    RETURN_TYPES = ("STRING", "STRING")
-    RETURN_NAMES = ("metadata_path", "audio_path")
+    RETURN_TYPES = ("STRING", "STRING", "AUDIO", "AUDIO")
+    RETURN_NAMES = ("metadata_path", "audio_path", "vocal_audio", "accompaniment_audio")
     FUNCTION = "preprocess"
     CATEGORY = "SoulXSinger"
 
@@ -378,7 +378,29 @@ class SoulXSingerPreprocess:
         if not os.path.exists(metadata_path):
              raise RuntimeError(f"Preprocessing failed to generate metadata at {metadata_path}")
         
-        return (metadata_path, save_path)
+        vocal_path = os.path.join(preprocess_save_dir, "vocal.wav")
+        acc_path = os.path.join(preprocess_save_dir, "acc.wav")
+        
+        # Load audio for output
+        vocal_audio = None
+        acc_audio = None
+
+        if os.path.exists(vocal_path):
+             waveform, sample_rate = torchaudio.load(vocal_path)
+             if waveform.dim() == 2: waveform = waveform.unsqueeze(0)
+             vocal_audio = {"waveform": waveform, "sample_rate": sample_rate}
+        
+        if os.path.exists(acc_path):
+             waveform, sample_rate = torchaudio.load(acc_path)
+             if waveform.dim() == 2: waveform = waveform.unsqueeze(0)
+             acc_audio = {"waveform": waveform, "sample_rate": sample_rate}
+        else:
+             # If no accompaniment (vocal_sep=False), return empty/silent audio or None
+             # For ComfyUI safety, better to return silence of same length as vocal
+             if vocal_audio is not None:
+                 acc_audio = {"waveform": torch.zeros_like(vocal_audio["waveform"]), "sample_rate": vocal_audio["sample_rate"]}
+
+        return (metadata_path, save_path, vocal_audio, acc_audio)
 
 
 class SoulXSingerGenerate:
