@@ -112,9 +112,13 @@ class SoulXSingerLoader:
     @classmethod
 
     def INPUT_TYPES(s):
+        models = folder_paths.get_filename_list("soulx-singer")
+        if not models:
+            models = ["model.pt"] # Fallback to avoid validation error on load
+            
         return {
             "required": {
-                "model_path": (folder_paths.get_filename_list("soulx-singer"),),
+                "model_path": (models,),
             },
         }
 
@@ -377,9 +381,9 @@ class SoulXSingerGenerate:
         return {
             "required": {
                 "soulx_model": ("SOULX_MODEL",),
-                "prompt_audio_path": ("STRING", {"default": "", "multiline": False}),
-                "prompt_metadata_path": ("STRING", {"default": "", "multiline": False}),
-                "target_metadata_path": ("STRING", {"default": "", "multiline": False}),
+                "prompt_audio_path": ("STRING", {"default": "", "multiline": False, "forceInput": True}),
+                "prompt_metadata_path": ("STRING", {"default": "", "multiline": False, "forceInput": True}),
+                "target_metadata_path": ("STRING", {"default": "", "multiline": False, "forceInput": True}),
                 "control": (["score-controlled", "melody-controlled"], {"default": "score-controlled"}),
                 "pitch_shift": ("FLOAT", {"default": 0, "min": -36, "max": 36, "step": 1}),
                 "auto_shift": ("BOOLEAN", {"default": True}),
