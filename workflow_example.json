@@ -136,14 +136,28 @@
                     ],
                     "shape": 3,
                     "slot_index": 1
+                },
+                {
+                    "name": "vocal_audio",
+                    "type": "AUDIO",
+                    "links": [],
+                    "shape": 3,
+                    "slot_index": 2
+                },
+                {
+                    "name": "accompaniment_audio",
+                    "type": "AUDIO",
+                    "links": [],
+                    "shape": 3,
+                    "slot_index": 3
                 }
             ],
             "properties": {},
             "widgets_values": [
                 "prompt",
                 "English",
-                false,
-                "SoulX-Singer-Preprocess"
+                "SoulX-Singer-Preprocess",
+                false
             ]
         },
         {
@@ -183,14 +197,28 @@
                     "links": [],
                     "shape": 3,
                     "slot_index": 1
+                },
+                {
+                    "name": "vocal_audio",
+                    "type": "AUDIO",
+                    "links": [],
+                    "shape": 3,
+                    "slot_index": 2
+                },
+                {
+                    "name": "accompaniment_audio",
+                    "type": "AUDIO",
+                    "links": [],
+                    "shape": 3,
+                    "slot_index": 3
                 }
             ],
             "properties": {},
             "widgets_values": [
                 "target",
                 "English",
-                false,
-                "SoulX-Singer-Preprocess"
+                "SoulX-Singer-Preprocess",
+                false
             ]
         },
         {
