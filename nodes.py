@@ -1,4 +1,3 @@
-
 import os
 import sys
 import torch
@@ -10,6 +9,45 @@ import soundfile as sf
 import shutil
 import json
 from pathlib import Path
+import types
+import unittest.mock as mock
+
+# --- NeMo 2.6.1 + Mac Import Fix ---
+# NeMo 2.6.1 has a hard dependency on 'nv_one_logger' which is internal/missing.
+# We mock it here to prevent ImportError when importing nemo.collections.asr
+def _mock_nemo_logger():
+    if "nv_one_logger" in sys.modules:
+        return
+
+    def mock_module(name):
+        m = types.ModuleType(name)
+        sys.modules[name] = m
+        return m
+
+    m_main = mock_module("nv_one_logger")
+    m_api = mock_module("nv_one_logger.api")
+    m_api_cfg = mock_module("nv_one_logger.api.config")
+    m_tt = mock_module("nv_one_logger.training_telemetry")
+    m_tt_api = mock_module("nv_one_logger.training_telemetry.api")
+    m_tt_api_cb = mock_module("nv_one_logger.training_telemetry.api.callbacks")
+    m_tt_api_cfg = mock_module("nv_one_logger.training_telemetry.api.config")
+    m_tt_api_prov = mock_module("nv_one_logger.training_telemetry.api.training_telemetry_provider")
+    m_tt_int = mock_module("nv_one_logger.training_telemetry.integration")
+    m_tt_int_pl = mock_module("nv_one_logger.training_telemetry.integration.pytorch_lightning")
+
+    # Populate attributes
+    m_api_cfg.OneLoggerConfig = mock.MagicMock()
+    m_tt_api_cb.on_app_start = mock.MagicMock()
+    m_tt_api_cfg.TrainingTelemetryConfig = mock.MagicMock()
+    m_tt_api_prov.TrainingTelemetryProvider = mock.MagicMock()
+
+    class MockTimeEventCallback:
+        def __init__(self, *args, **kwargs):
+            pass
+    m_tt_int_pl.TimeEventCallback = MockTimeEventCallback
+
+_mock_nemo_logger()
+# -----------------------------------
 
 # Add the soulx_singer_repo directory to sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +79,13 @@ except ImportError as e:
     pass
 
 # Define constants
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+# Define constants
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif torch.backends.mps.is_available():
+    DEVICE = "mps"
+else:
+    DEVICE = "cpu"
 
 # Register model path
 # Register model path

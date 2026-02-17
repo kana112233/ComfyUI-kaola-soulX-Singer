@@ -52,3 +52,9 @@ Thumbs.db
 # Project specific
 soulx_singer_repo/.git
 test_import.py
+test_model_load.py
+test_output/
+test_preprocess.py
+test_standalone.py
+debug_import.py
+
