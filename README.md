@@ -4,19 +4,37 @@ ComfyUI nodes for [SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer), a 
 
 ## Installation
 
+Recommended: Use **Conda** to avoid dependency conflicts.
+
 1.  **Clone the repository**:
-    Navigate to your ComfyUI's `custom_nodes` directory and run:
+    Navigate to your ComfyUI's `custom_nodes` directory:
     ```bash
     cd ComfyUI/custom_nodes
     git clone https://github.com/kana112233/ComfyUI-kaola-soulX-Singer.git
     cd ComfyUI-kaola-soulX-Singer
     ```
 
-2.  **Install dependencies**:
-    Install the required Python packages. Note that we have resolved compatibility issues for Mac users (MPS support).
+2.  **Create Environment & Install Dependencies**:
     ```bash
+    # Create Python 3.10 environment
+    conda create -n kaola_singer python=3.10 -y
+    conda activate kaola_singer
+
+    # Install dependencies
     pip install -r requirements.txt
     ```
+
+## Updates
+
+To update this node and the upstream core code:
+
+```bash
+git pull
+cd soulx_singer_repo
+git pull origin main
+cd ..
+pip install -r requirements.txt
+```
 
 ## Model Download & Setup
 
