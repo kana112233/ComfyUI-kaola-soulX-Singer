@@ -1,0 +1,25 @@
+[project]
+name = "comfyui-kaola-soulx-singer"
+description = "ComfyUI nodes for SoulX-Singer, a high-quality singing voice synthesis system."
+version = "0.0.1"
+license = { text = "MIT" }
+dependencies = [
+    "torch",
+    "numpy",
+    "torchaudio",
+    "soundfile",
+    "librosa>=0.11.0",
+    "gradio>=6.3.0",
+]
+
+[project.urls]
+Repository = "https://github.com/kana112233/ComfyUI-kaola-soulX-Singer"
+
+[tool.comfy]
+PublisherId = "kaola"
+DisplayName = "SoulX-Singer Nodes"
+Icon = ""
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
