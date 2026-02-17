@@ -303,10 +303,11 @@ class SoulXSingerPreprocess:
                 "audio": ("AUDIO",),
                 "mode": (["prompt", "target"],),
                 "language": (["Mandarin", "Cantonese", "English"],),
-                "vocal_separation": ("BOOLEAN", {"default": False}),
-                # Changed to dropdown (list) of NAMES
-                "model": (get_available_preprocess_models(),), 
+                "model": (get_available_preprocess_models(), {"tooltip": "Select the preprocess model (e.g., SoulX-Singer-Preprocess)."}), 
             },
+            "optional": {
+                "vocal_separation": ("BOOLEAN", {"default": False, "tooltip": "Enable to separate vocals from accompaniment before processing. Essential if input is a song with music."}),
+            }
         }
 
     RETURN_TYPES = ("STRING", "STRING", "AUDIO", "AUDIO")
@@ -412,10 +413,10 @@ class SoulXSingerGenerate:
                 "prompt_audio_path": ("STRING", {"default": "", "multiline": False, "forceInput": True}),
                 "prompt_metadata_path": ("STRING", {"default": "", "multiline": False, "forceInput": True}),
                 "target_metadata_path": ("STRING", {"default": "", "multiline": False, "forceInput": True}),
-                "control": (["score-controlled", "melody-controlled"], {"default": "score-controlled"}),
-                "pitch_shift": ("FLOAT", {"default": 0, "min": -36, "max": 36, "step": 1}),
-                "auto_shift": ("BOOLEAN", {"default": True}),
-                "seed": ("INT", {"default": 12345, "min": 0, "max": 0xffffffffffffffff}),
+                "seed": ("INT", {"default": 12345, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Fixed seed for reproducible results."}),
+                "control": (["score-controlled", "melody-controlled"], {"default": "score-controlled", "tooltip": "Control mode: 'score-controlled' follows pitch strictly (better for covers), 'melody-controlled' is more expressive."}),
+                "pitch_shift": ("FLOAT", {"default": 0, "min": -36, "max": 36, "step": 1, "tooltip": "Shift pitch in semitones. Use negative values to lower key if target song is too high."}),
+                "auto_shift": ("BOOLEAN", {"default": True, "tooltip": "Automatically adjust pitch to match the prompt's comfortable range. Recommended ON."}),
             },
         }
 
@@ -449,10 +450,35 @@ class SoulXSingerGenerate:
         args.pitch_shift = int(pitch_shift)
         args.control = "melody" if control == "melody-controlled" else "score"
 
+        # Helper to patch tqdm for ComfyUI progress bar
+        from tqdm import tqdm as original_tqdm
+        import comfy.utils
+
+        pbar = comfy.utils.ProgressBar(100) # We don't know exact total steps easily without parsing metadata first, but tqdm usually knows total
+
+        class ComfyTqdm(original_tqdm):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.comfy_pbar = comfy.utils.ProgressBar(self.total)
+                
+            def update(self, n=1):
+                super().update(n)
+                self.comfy_pbar.update(n)
+
+        # Monkey patch tqdm in the module where it's used
         try:
+             import cli.inference
+             old_tqdm = cli.inference.tqdm
+             cli.inference.tqdm = ComfyTqdm
+             
              svs_process(args, soulx_model["config"], soulx_model["model"])
+             
         except Exception as e:
             raise RuntimeError(f"Generation failed: {e}")
+        finally:
+            # Restore original tqdm
+            if 'cli.inference' in sys.modules:
+                cli.inference.tqdm = old_tqdm
 
         generated_path = os.path.join(save_dir, "generated.wav")
         if not os.path.exists(generated_path):

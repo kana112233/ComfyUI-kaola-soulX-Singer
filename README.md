@@ -117,7 +117,7 @@ Generates singing voice.
 
 ## Usage & Workflows
 
-An example workflow is provided in `workflow_example.json`. You can drag and drop this file into ComfyUI to load the pipeline.
+An example workflow is provided in `examples/workflow_example.json`. You can drag and drop this file into ComfyUI to load the pipeline.
 
 **Important for Chinese Output:**
 -   Ensure `SoulXSingerPreprocess` node has `language` set to **`Mandarin`**.
