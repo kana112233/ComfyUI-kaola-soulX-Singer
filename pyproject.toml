@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-kaola-soulx-singer"
 description = "ComfyUI nodes for SoulX-Singer, a high-quality singing voice synthesis system."
-version = "0.0.1"
+version = "0.0.2"
 license = { text = "MIT" }
 dependencies = [
     "torch",
