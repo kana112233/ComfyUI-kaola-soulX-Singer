@@ -220,6 +220,25 @@ class CustomPreprocessPipeline(PreprocessPipeline):
         
     # We reuse parent's run method as it uses self.* components we just initialized
 
+# Helper to find available model directories
+def get_available_preprocess_dirs():
+    possible_roots = []
+    if folder_paths.models_dir:
+         possible_roots.append(os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess"))
+         possible_roots.append(os.path.join(folder_paths.models_dir, "SoulX-Singer-Preprocess"))
+    
+    possible_roots.append(os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess"))
+    
+    existing_roots = [p for p in possible_roots if os.path.exists(p)]
+    
+    # If none found, provide a placeholder or the default expected path so user can see what's missing
+    if not existing_roots:
+        default_path = os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess") if folder_paths.models_dir else "models/soulx-singer/SoulX-Singer-Preprocess"
+        return [default_path]
+        
+    return existing_roots
+
+
 class SoulXSingerPreprocess:
     @classmethod
     def INPUT_TYPES(s):
@@ -229,10 +248,9 @@ class SoulXSingerPreprocess:
                 "mode": (["prompt", "target"],),
                 "language": (["Mandarin", "Cantonese", "English"],),
                 "vocal_separation": ("BOOLEAN", {"default": False}),
+                # Changed to dropdown (list)
+                "model_dirs": (get_available_preprocess_dirs(),), 
             },
-            "optional": {
-                 "model_dirs": ("STRING", {"default": "models/soulx-singer/SoulX-Singer-Preprocess"}), 
-            }
         }
 
     RETURN_TYPES = ("STRING", "STRING")
@@ -240,35 +258,33 @@ class SoulXSingerPreprocess:
     FUNCTION = "preprocess"
     CATEGORY = "SoulXSinger"
 
-    def preprocess(self, audio, mode, language, vocal_separation, model_dirs=""):
+    def preprocess(self, audio, mode, language, vocal_separation, model_dirs):
         if not IMPORT_SUCCESS:
             raise RuntimeError("Failed to import SoulX-Singer dependencies. Please check console for details and ensure requirements are installed.")
 
         # Determine paths
-        # Search priority: 
-        # 1. ComfyUI/models/soulx-singer/SoulX-Singer-Preprocess
-        # 2. ComfyUI/models/SoulX-Singer-Preprocess
-        # 3. repo/pretrained_models/SoulX-Singer-Preprocess
-        
-        possible_roots = []
-        if folder_paths.models_dir:
-             possible_roots.append(os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess"))
-             possible_roots.append(os.path.join(folder_paths.models_dir, "SoulX-Singer-Preprocess"))
-        
-        # User specified path (Removed for portability)
-        # user_model_path = "/Users/xiohu/work/comfyUI/ComfyUI-source/models/SoulX-Singer"
-        # possible_roots.append(os.path.join(user_model_path, "SoulX-Singer-Preprocess"))
-
-        possible_roots.append(os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess"))
-        
         models_root = None
-        for p in possible_roots:
-            if os.path.exists(p):
-                models_root = p
-                break
+        
+        # 1. Trust the user selection if it exists
+        if model_dirs and os.path.exists(model_dirs):
+            models_root = model_dirs
+            
+        # 2. Fallback search (in case the selection is invalid or from a stale workflow)
+        if not models_root:
+            possible_roots = []
+            if folder_paths.models_dir:
+                 possible_roots.append(os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess"))
+                 possible_roots.append(os.path.join(folder_paths.models_dir, "SoulX-Singer-Preprocess"))
+            
+            possible_roots.append(os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess"))
+            
+            for p in possible_roots:
+                if os.path.exists(p):
+                    models_root = p
+                    break
         
         if not models_root:
-            raise FileNotFoundError(f"Could not find SoulX-Singer-Preprocess models. Checked: {possible_roots}. Please download them.")
+            raise FileNotFoundError(f"Could not find SoulX-Singer-Preprocess models. Checked: {model_dirs} and standard paths. Please download them.")
         
         output_dir = folder_paths.get_output_directory()
         temp_dir = os.path.join(output_dir, "soulx_temp")
