@@ -105,7 +105,9 @@ else:
 # Register model path
 # Ensure 'soulx-singer' is looked for in ComfyUI/models/soulx-singer
 if "soulx-singer" not in folder_paths.folder_names_and_paths:
+    # Support both lowercase and capitalized folder names (Linux is case-sensitive)
     folder_paths.add_model_folder_path("soulx-singer", os.path.join(folder_paths.models_dir, "soulx-singer"))
+    folder_paths.add_model_folder_path("soulx-singer", os.path.join(folder_paths.models_dir, "SoulX-Singer"))
 
 
 class SoulXSingerLoader:
@@ -133,7 +135,8 @@ class SoulXSingerLoader:
             
         model_full_path = folder_paths.get_full_path("soulx-singer", model_path)
         if not model_full_path:
-            raise FileNotFoundError(f"Model not found: {model_path}")
+            expected_paths = folder_paths.get_folder_paths("soulx-singer")
+            raise FileNotFoundError(f"Model '{model_path}' NOT FOUND. Searched widely in: {expected_paths}. Please ensure 'model.pt' is in ComfyUI/models/soulx-singer/")
 
         # Config location assumptions
         config_path = os.path.join(soulx_repo_path, "soulxsinger", "config", "soulxsinger.yaml")
