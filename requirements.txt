@@ -10,7 +10,7 @@ librosa==0.10.2.post1
 soundfile==0.12.1
 resampy==0.4.3
 pyloudnorm==0.1.1
-pyworld==0.3.3
+pyworld>=0.3.4
 praat-parselmouth==0.4.3
 
 # ML / DL
