@@ -93,27 +93,41 @@ Loads the SoulX-Singer model.
 - **model_path**: Select the model checkpoint (e.g., `model.pt`).
 
 ### SoulX-Singer Preprocess
-Preprocesses audio for use as prompt or target.
+Preprocesses audio for use as prompt or target. Run this **TWICE** in your workflow (once for Prompt audio, once for Target audio).
+
+**Inputs:**
 - **audio**: Audio to preprocess.
-- **mode**: `prompt` (reference audio) or `target` (melody/lyrics source).
-- **vocal_separation**: Whether to separate vocals from background music.
+- **mode**:
+    - `prompt`: Process the reference audio (your voice/timbre source).
+    - `target`: Process the target song (the melody/lyrics source).
+- **vocal_separation**: Enable if input has background music/accompaniment. Essential for clean results.
 - **language**: Lyric language (Mandarin, Cantonese, English).
 - **model_dirs**: Optional path override for preprocess models.
 
-Returns:
-- **metadata_path**: Path to the generated metadata JSON.
+**Outputs:**
+- **metadata_path**: Path to the generated metadata JSON (Connect to Generate node).
 - **audio_path**: Path to the preprocessed audio WAV.
+- **vocal_audio**: The separated vocal track (Dry). Useful for previewing what the model hears.
+- **accompaniment_audio**: The separated accompaniment track (Instrumental). Useful for mixing with the final result.
 
 ### SoulX-Singer Generate
-Generates singing voice.
-- **soulx_model**: The loaded model.
-- **prompt_audio_path**: Path to prompt audio (from Preprocess).
-- **prompt_metadata_path**: Path to prompt metadata (from Preprocess).
-- **target_metadata_path**: Path to target metadata (from Preprocess).
-- **control**: `score-controlled` (use midi pitch) or `melody-controlled` (use f0).
-- **pitch_shift**: Pitch shift in semitones.
-- **auto_shift**: Auto pitch shift.
-- **seed**: Random seed.
+The core synthesis node.
+
+**Inputs:**
+- **soulx_model**: The loaded model from Loader node.
+- **prompt_audio_path**: Path to prompt audio (Connect `audio_path` from Prompt Preprocess node).
+- **prompt_metadata_path**: Path to prompt metadata (Connect `metadata_path` from Prompt Preprocess node).
+- **target_metadata_path**: Path to target metadata (Connect `metadata_path` from Target Preprocess node).
+- **control**:
+    - `score-controlled`: Pitch follows the musical score strictness. More stable, better for covers.
+    - `melody-controlled`: Pitch follows the melody curve. More expressive/free.
+- **pitch_shift**: Semitone adjustment (Float).
+    - `0`: No change.
+    - `+12`: Up one octave.
+    - `-2`: Down 2 semitones.
+    - Use this to adjust the key if the target song is too high/low for the voice model.
+- **auto_shift**: Automatically adjust pitch to match the prompt's comfortable range. **Recommended: True**.
+- **seed**: Fixed seed for reproducible results. Change this to get slight variations in performance.
 
 ## Usage & Workflows
 
