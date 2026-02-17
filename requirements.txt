@@ -51,6 +51,6 @@ ToJyutping
 # torchaudio==2.2.0
 torchcodec
 tqdm
-transformers>=4.36.0
-tokenizers>=0.15.0
+# transformers (installed by nemo_toolkit)
+# tokenizers (installed by transformers)
 webrtcvad
