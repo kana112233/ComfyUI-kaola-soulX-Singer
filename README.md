@@ -2,6 +2,17 @@
 
 ComfyUI nodes for [SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer), a high-quality singing voice synthesis system.
 
+## ⚠️ Core Compatibility Warning (NumPy 2.0)
+
+**This node requires NumPy 2.0+ to function correctly due to upstream library dependencies.**
+
+**IMPORTANT:** Many other ComfyUI custom nodes (e.g., `ComfyUI-PuLID`, `InsightFace`, `ComfyUI-Impact-Pack`) are currently **ONLY compatible with NumPy 1.x**.
+If you install the requirements for this node, **it will upgrade NumPy to 2.x and likely BREAK those other nodes**.
+
+**Solution if you encounter crashes (AttributeError: _ARRAY_API not found):**
+1.  **Disable/Remove incompatible nodes**: If you must use SoulX-Singer, you may need to temporarily remove other crashing nodes from `custom_nodes/` or disable them.
+2.  **Separate Environment**: The safest way is to use a separate ComfyUI installation or specific Conda environment for this node.
+
 ## Installation
 
 Recommended: Use **Conda** to avoid dependency conflicts.

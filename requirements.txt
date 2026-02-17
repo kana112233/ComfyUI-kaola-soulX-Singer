@@ -14,7 +14,7 @@ ml_collections==1.1.0
 nemo_toolkit==2.6.1
 nltk==3.9.2
 numba==0.63.1
-# numpy<2.0 (Allowed numpy 2.x)
+numpy>=2.1.0
 onnx>=1.14.0
 omegaconf==2.3.0
 packaging==24.2
