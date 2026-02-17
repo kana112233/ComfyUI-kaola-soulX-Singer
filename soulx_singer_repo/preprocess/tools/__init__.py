@@ -29,15 +29,21 @@ from .vocal_detection import VocalDetector
 try:
     from .vocal_separation.model import VocalSeparator  # type: ignore
 except Exception:  # pragma: no cover
+    import traceback
+    traceback.print_exc()
     VocalSeparator = None  # type: ignore
 
 try:
     from .note_transcription.model import NoteTranscriber  # type: ignore
 except Exception:  # pragma: no cover
+    import traceback
+    traceback.print_exc()
     NoteTranscriber = None  # type: ignore
 try:
     from .lyric_transcription import LyricTranscriber
 except Exception:  # pragma: no cover
+    import traceback
+    traceback.print_exc()
     LyricTranscriber = None  # type: ignore
 
 __all__ = [
