@@ -1,50 +1,53 @@
-accelerate==1.11.0
-beartype==0.22.9
-einops==0.8.2
-funasr==1.3.0
-g2p_en==2.1.0
-g2pM==0.1.2.5
-# gradio==6.3.0 (Excluded for ComfyUI)
+# Core Numerics (Pinned for NumPy 1.x compatibility)
+numpy<2.0.0,>=1.26.0
+numba==0.59.1
+llvmlite==0.42.0
+scipy==1.13.1
+scikit_learn==1.4.2
+
+# Audio Processing
+librosa==0.10.2.post1
+soundfile==0.12.1
+resampy==0.4.3
+pyloudnorm==0.1.1
+pyworld==0.3.3
+praat-parselmouth==0.4.3
+
+# ML / DL
+accelerate>=0.25.0
+einops>=0.7.0
 huggingface_hub>=0.20.0
-librosa==0.11.0
-loralib==0.1.2
-matplotlib==3.10.8
-mido==1.3.3
-ml_collections==1.1.0
-nemo_toolkit==2.6.1
-nltk==3.9.2
-numba<0.60.0
-numpy<2.0.0
-onnx>=1.14.0
-omegaconf==2.3.0
-packaging==24.2
-praat-parselmouth==0.4.7
-# Preprocess / NeMo dependencies
-setuptools
-fiddle
-cloudpickle
+safetensors
+transformers>=4.36.0
+
+# Misc
+beartype
+omegaconf
+packaging
+tqdm
+sentencepiece
+mido
+pretty_midi
+six
+g2p_en
+ToJyutping
+
+# SoulX specific
+funasr==1.0.18
+modelscope>=1.11.0
+rotary_embedding_torch
+sageattention
+
+# Preprocess dependencies
+paddlepaddle>=2.6.0; sys_platform != "linux"
 kaldialign
-pyannote.audio
-braceexpand
+pyannote.audio==3.1.1
 webdataset
 jiwer
 editdistance
-sentencepiece>=0.1.99
-g2p_en
 kaldiio
-resampy>=0.4.0
-
-
-pretty_midi==0.2.11
-pyloudnorm==0.2.0
-pyworld==0.3.5
-rotary_embedding_torch==0.8.9
-sageattention==1.0.6
-scikit_learn<1.5.0
-scipy<1.13.0
-six==1.17.0
 scikit_image<0.23.0
-soundfile==0.13.1
+matplotlib<3.9.0
 ToJyutping==3.2.0
 # torch==2.2.0
 # torchaudio==2.2.0
