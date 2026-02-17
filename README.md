@@ -90,6 +90,10 @@ Generates singing voice.
 
 An example workflow is provided in `workflow_example.json`. You can drag and drop this file into ComfyUI to load the pipeline.
 
+**Important for Chinese Output:**
+-   Ensure `SoulXSingerPreprocess` node has `language` set to **`Mandarin`**.
+-   Ensure you have downloaded the Chinese ASR model (`speech_seaco_paraformer...`) into the `SoulX-Singer-Preprocess` folder.
+
 1.  **SoulX-Singer Loader**: Selects the model.
 2.  **Load Audio**: Two instances, one for "Prompt" (Reference) and one for "Target" (Melody/Lyrics).
 3.  **SoulX-Singer Preprocess**:

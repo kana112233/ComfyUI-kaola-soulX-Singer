@@ -221,22 +221,68 @@ class CustomPreprocessPipeline(PreprocessPipeline):
     # We reuse parent's run method as it uses self.* components we just initialized
 
 # Helper to find available model directories
-def get_available_preprocess_dirs():
+def get_available_preprocess_models():
     possible_roots = []
+    
+    # 1. ComfyUI/models/soulx-singer/*
     if folder_paths.models_dir:
-         possible_roots.append(os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess"))
-         possible_roots.append(os.path.join(folder_paths.models_dir, "SoulX-Singer-Preprocess"))
+         soulx_models_dir = os.path.join(folder_paths.models_dir, "soulx-singer")
+         if os.path.exists(soulx_models_dir):
+             for name in os.listdir(soulx_models_dir):
+                 if os.path.isdir(os.path.join(soulx_models_dir, name)):
+                     possible_roots.append(os.path.join(soulx_models_dir, name))
+                     
+         # 2. ComfyUI/models/* (Legacy/Direct)
+         for name in os.listdir(folder_paths.models_dir):
+             path = os.path.join(folder_paths.models_dir, name)
+             # Basic heuristic: if it contains rmvpe or similar, it's a preprocess model
+             if os.path.isdir(path) and "SoulX-Singer-Preprocess" in name:
+                 possible_roots.append(path)
+
+    # 3. Built-in
+    builtin_models_dir = os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess")
+    if os.path.exists(builtin_models_dir):
+        possible_roots.append(builtin_models_dir)
     
-    possible_roots.append(os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess"))
-    
+    # Filter for valid existing paths
     existing_roots = [p for p in possible_roots if os.path.exists(p)]
     
-    # If none found, provide a placeholder or the default expected path so user can see what's missing
-    if not existing_roots:
-        default_path = os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess") if folder_paths.models_dir else "models/soulx-singer/SoulX-Singer-Preprocess"
-        return [default_path]
+    # Return just the folder names to show in UI
+    # We might have duplicates, so we deduplicate by name
+    # Priority: The order in possible_roots (Comfy/models/soulx-singer > Comfy/models > Builtin)
+    seen_names = set()
+    unique_names = []
+    for p in existing_roots:
+        name = os.path.basename(p)
+        if name not in seen_names:
+            seen_names.add(name)
+            unique_names.append(name)
+
+    # If none found, return default name
+    if not unique_names:
+        return ["SoulX-Singer-Preprocess"]
         
-    return existing_roots
+    return unique_names
+
+def resolve_preprocess_model_path(model_name):
+    # Re-scan to find the path matching the name
+    # This repeats the logic of get_available_preprocess_models but returns the path
+    
+    # 1. Check ComfyUI/models/soulx-singer/<name>
+    if folder_paths.models_dir:
+        p = os.path.join(folder_paths.models_dir, "soulx-singer", model_name)
+        if os.path.exists(p): return p
+        
+        # 2. Check ComfyUI/models/<name>
+        p = os.path.join(folder_paths.models_dir, model_name)
+        if os.path.exists(p): return p
+
+    # 3. Check Built-in
+    builtin_path = os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess")
+    if os.path.basename(builtin_path) == model_name and os.path.exists(builtin_path):
+        return builtin_path
+        
+    return None
 
 
 class SoulXSingerPreprocess:
@@ -248,8 +294,8 @@ class SoulXSingerPreprocess:
                 "mode": (["prompt", "target"],),
                 "language": (["Mandarin", "Cantonese", "English"],),
                 "vocal_separation": ("BOOLEAN", {"default": False}),
-                # Changed to dropdown (list)
-                "model_dirs": (get_available_preprocess_dirs(),), 
+                # Changed to dropdown (list) of NAMES
+                "model": (get_available_preprocess_models(),), 
             },
         }
 
@@ -258,33 +304,19 @@ class SoulXSingerPreprocess:
     FUNCTION = "preprocess"
     CATEGORY = "SoulXSinger"
 
-    def preprocess(self, audio, mode, language, vocal_separation, model_dirs):
+    def preprocess(self, audio, mode, language, vocal_separation, model):
         if not IMPORT_SUCCESS:
             raise RuntimeError("Failed to import SoulX-Singer dependencies. Please check console for details and ensure requirements are installed.")
 
         # Determine paths
-        models_root = None
+        models_root = resolve_preprocess_model_path(model)
         
-        # 1. Trust the user selection if it exists
-        if model_dirs and os.path.exists(model_dirs):
-            models_root = model_dirs
-            
-        # 2. Fallback search (in case the selection is invalid or from a stale workflow)
+        # Fallback if resolution fails (e.g. user manually typed a path or old workflow string)
+        if not models_root and os.path.exists(model):
+             models_root = model
+
         if not models_root:
-            possible_roots = []
-            if folder_paths.models_dir:
-                 possible_roots.append(os.path.join(folder_paths.models_dir, "soulx-singer", "SoulX-Singer-Preprocess"))
-                 possible_roots.append(os.path.join(folder_paths.models_dir, "SoulX-Singer-Preprocess"))
-            
-            possible_roots.append(os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess"))
-            
-            for p in possible_roots:
-                if os.path.exists(p):
-                    models_root = p
-                    break
-        
-        if not models_root:
-            raise FileNotFoundError(f"Could not find SoulX-Singer-Preprocess models. Checked: {model_dirs} and standard paths. Please download them.")
+            raise FileNotFoundError(f"Could not find SoulX-Singer-Preprocess model: '{model}'. Please ensure it is in ComfyUI/models/soulx-singer/")
         
         output_dir = folder_paths.get_output_directory()
         temp_dir = os.path.join(output_dir, "soulx_temp")
