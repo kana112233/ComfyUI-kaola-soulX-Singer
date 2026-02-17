@@ -72,13 +72,28 @@ try:
     )
     from preprocess.utils import convert_metadata, merge_short_segments
     from preprocess.tools.midi_parser import MidiParser
+    
+    IMPORT_SUCCESS = True
 
 except ImportError as e:
     logging.error(f"Failed to import soulx_singer_repo modules: {e}")
     # We might fail here if dependencies are missing, but ComfyUI will catch it.
-    pass
+    IMPORT_SUCCESS = False
+    
+    # Define dummy classes to prevent NameError at module level
+    class PreprocessPipeline: pass
+    class F0Extractor: pass
+    class VocalDetector: pass
+    class VocalSeparator: pass
+    class NoteTranscriber: pass
+    class LyricTranscriber: pass
+    def build_svs_model(*args, **kwargs): pass
+    def svs_process(*args, **kwargs): pass
+    def load_config(*args, **kwargs): return {}
+    def convert_metadata(*args, **kwargs): pass
+    def merge_short_segments(*args, **kwargs): pass
+    class MidiParser: pass
 
-# Define constants
 # Define constants
 if torch.cuda.is_available():
     DEVICE = "cuda"
@@ -88,13 +103,14 @@ else:
     DEVICE = "cpu"
 
 # Register model path
-# Register model path
 # Ensure 'soulx-singer' is looked for in ComfyUI/models/soulx-singer
 if "soulx-singer" not in folder_paths.folder_names_and_paths:
     folder_paths.add_model_folder_path("soulx-singer", os.path.join(folder_paths.models_dir, "soulx-singer"))
 
+
 class SoulXSingerLoader:
     @classmethod
+
     def INPUT_TYPES(s):
         return {
             "required": {
@@ -108,6 +124,9 @@ class SoulXSingerLoader:
     CATEGORY = "SoulXSinger"
 
     def load_model(self, model_path):
+        if not IMPORT_SUCCESS:
+            raise RuntimeError("Failed to import SoulX-Singer dependencies. Please check console for details and ensure requirements are installed.")
+            
         model_full_path = folder_paths.get_full_path("soulx-singer", model_path)
         if not model_full_path:
             raise FileNotFoundError(f"Model not found: {model_path}")
@@ -222,6 +241,9 @@ class SoulXSingerPreprocess:
     CATEGORY = "SoulXSinger"
 
     def preprocess(self, audio, mode, language, vocal_separation, model_dirs=""):
+        if not IMPORT_SUCCESS:
+            raise RuntimeError("Failed to import SoulX-Singer dependencies. Please check console for details and ensure requirements are installed.")
+
         # Determine paths
         # Search priority: 
         # 1. ComfyUI/models/soulx-singer/SoulX-Singer-Preprocess
@@ -323,6 +345,9 @@ class SoulXSingerGenerate:
     CATEGORY = "SoulXSinger"
 
     def generate(self, soulx_model, prompt_audio_path, prompt_metadata_path, target_metadata_path, control, pitch_shift, auto_shift, seed):
+        if not IMPORT_SUCCESS:
+            raise RuntimeError("Failed to import SoulX-Singer dependencies. Please check console for details and ensure requirements are installed.")
+
         torch.manual_seed(seed)
         
         output_dir = folder_paths.get_output_directory()
