@@ -275,14 +275,17 @@ def resolve_preprocess_model_path(model_name):
     # Re-scan to find the path matching the name
     # This repeats the logic of get_available_preprocess_models but returns the path
     
-    # 1. Check ComfyUI/models/soulx-singer/<name>
-    if folder_paths.models_dir:
-        p = os.path.join(folder_paths.models_dir, "soulx-singer", model_name)
-        if os.path.exists(p): return p
-        
-        # 2. Check ComfyUI/models/<name>
-        p = os.path.join(folder_paths.models_dir, model_name)
-        if os.path.exists(p): return p
+    # 1. Check ComfyUI/models/soulx-singer/<name> (lowercase parent)
+    p = os.path.join(folder_paths.models_dir, "soulx-singer", model_name)
+    if os.path.exists(p): return p
+    
+    # 2. Check ComfyUI/models/SoulX-Singer/<name> (capitalized parent)
+    p = os.path.join(folder_paths.models_dir, "SoulX-Singer", model_name)
+    if os.path.exists(p): return p
+    
+    # 3. Check ComfyUI/models/<name> (direct child)
+    p = os.path.join(folder_paths.models_dir, model_name)
+    if os.path.exists(p): return p
 
     # 3. Check Built-in
     builtin_path = os.path.join(soulx_repo_path, "pretrained_models", "SoulX-Singer-Preprocess")
@@ -323,7 +326,7 @@ class SoulXSingerPreprocess:
              models_root = model
 
         if not models_root:
-            raise FileNotFoundError(f"Could not find SoulX-Singer-Preprocess model: '{model}'. Please ensure it is in ComfyUI/models/soulx-singer/")
+            raise FileNotFoundError(f"Could not find Preprocess model '{model}'. Searched in:\n - ComfyUI/models/soulx-singer/{model}\n - ComfyUI/models/SoulX-Singer/{model}\n - ComfyUI/models/{model}\n - {soulx_repo_path}/pretrained_models/SoulX-Singer-Preprocess")
         
         output_dir = folder_paths.get_output_directory()
         temp_dir = os.path.join(output_dir, "soulx_temp")
