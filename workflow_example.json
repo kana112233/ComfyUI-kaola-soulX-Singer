@@ -1,0 +1,341 @@
+{
+    "last_node_id": 10,
+    "last_link_id": 11,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "SoulXSingerLoader",
+            "pos": [
+                50,
+                50
+            ],
+            "size": {
+                "0": 300,
+                "1": 100
+            },
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "soulx_model",
+                    "type": "SOULX_MODEL",
+                    "links": [
+                        1
+                    ],
+                    "shape": 3,
+                    "slot_index": 0
+                }
+            ],
+            "properties": {},
+            "widgets_values": [
+                "model.pt"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoadAudio",
+            "pos": [
+                50,
+                200
+            ],
+            "size": {
+                "0": 300,
+                "1": 100
+            },
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "audio",
+                    "type": "AUDIO",
+                    "links": [
+                        2
+                    ],
+                    "shape": 3,
+                    "slot_index": 0
+                }
+            ],
+            "properties": {},
+            "widgets_values": [
+                "prompt_audio.wav",
+                "upload"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "LoadAudio",
+            "pos": [
+                50,
+                400
+            ],
+            "size": {
+                "0": 300,
+                "1": 100
+            },
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "audio",
+                    "type": "AUDIO",
+                    "links": [
+                        3
+                    ],
+                    "shape": 3,
+                    "slot_index": 0
+                }
+            ],
+            "properties": {},
+            "widgets_values": [
+                "target_audio.wav",
+                "upload"
+            ]
+        },
+        {
+            "id": 4,
+            "type": "SoulXSingerPreprocess",
+            "pos": [
+                400,
+                200
+            ],
+            "size": {
+                "0": 300,
+                "1": 150
+            },
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "audio",
+                    "type": "AUDIO",
+                    "link": 2
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "metadata_path",
+                    "type": "STRING",
+                    "links": [
+                        4
+                    ],
+                    "shape": 3,
+                    "slot_index": 0
+                },
+                {
+                    "name": "audio_path",
+                    "type": "STRING",
+                    "links": [
+                        5
+                    ],
+                    "shape": 3,
+                    "slot_index": 1
+                }
+            ],
+            "properties": {},
+            "widgets_values": [
+                "prompt",
+                "English",
+                false,
+                "models/soulx-singer/SoulX-Singer-Preprocess"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "SoulXSingerPreprocess",
+            "pos": [
+                400,
+                400
+            ],
+            "size": {
+                "0": 300,
+                "1": 150
+            },
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "audio",
+                    "type": "AUDIO",
+                    "link": 3
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "metadata_path",
+                    "type": "STRING",
+                    "links": [
+                        6
+                    ],
+                    "shape": 3,
+                    "slot_index": 0
+                },
+                {
+                    "name": "audio_path",
+                    "type": "STRING",
+                    "links": [],
+                    "shape": 3,
+                    "slot_index": 1
+                }
+            ],
+            "properties": {},
+            "widgets_values": [
+                "target",
+                "English",
+                false,
+                "models/soulx-singer/SoulX-Singer-Preprocess"
+            ]
+        },
+        {
+            "id": 6,
+            "type": "SoulXSingerGenerate",
+            "pos": [
+                800,
+                100
+            ],
+            "size": {
+                "0": 400,
+                "1": 300
+            },
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "soulx_model",
+                    "type": "SOULX_MODEL",
+                    "link": 1
+                },
+                {
+                    "name": "prompt_audio_path",
+                    "type": "STRING",
+                    "link": 5
+                },
+                {
+                    "name": "prompt_metadata_path",
+                    "type": "STRING",
+                    "link": 4
+                },
+                {
+                    "name": "target_metadata_path",
+                    "type": "STRING",
+                    "link": 6
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "audio",
+                    "type": "AUDIO",
+                    "links": [
+                        7
+                    ],
+                    "shape": 3,
+                    "slot_index": 0
+                }
+            ],
+            "properties": {},
+            "widgets_values": [
+                "score-controlled",
+                0,
+                true,
+                12345
+            ]
+        },
+        {
+            "id": 7,
+            "type": "SaveAudio",
+            "pos": [
+                1250,
+                100
+            ],
+            "size": {
+                "0": 300,
+                "1": 100
+            },
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "audio",
+                    "type": "AUDIO",
+                    "link": 7
+                }
+            ],
+            "outputs": [],
+            "properties": {},
+            "widgets_values": [
+                "soulx_result"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            1,
+            0,
+            6,
+            0,
+            "SOULX_MODEL"
+        ],
+        [
+            2,
+            2,
+            0,
+            4,
+            0,
+            "AUDIO"
+        ],
+        [
+            3,
+            3,
+            0,
+            5,
+            0,
+            "AUDIO"
+        ],
+        [
+            4,
+            4,
+            0,
+            6,
+            2,
+            "STRING"
+        ],
+        [
+            5,
+            4,
+            1,
+            6,
+            1,
+            "STRING"
+        ],
+        [
+            6,
+            5,
+            0,
+            6,
+            3,
+            "STRING"
+        ],
+        [
+            7,
+            6,
+            0,
+            7,
+            0,
+            "AUDIO"
+        ]
+    ],
+    "groups": [],
+    "config": {},
+    "extra": {},
+    "version": 0.4
+}

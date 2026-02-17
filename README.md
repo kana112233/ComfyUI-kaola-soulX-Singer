@@ -86,11 +86,18 @@ Generates singing voice.
 - **auto_shift**: Auto pitch shift.
 - **seed**: Random seed.
 
-## Usage
+## Usage & Workflows
 
-1. Load Model with `SoulX-Singer Loader`.
-2. Load Prompt Audio and Target Audio with `Load Audio` nodes.
-3. Pass Prompt Audio to `SoulX-Singer Preprocess` (mode="prompt").
-4. Pass Target Audio to `SoulX-Singer Preprocess` (mode="target").
-5. Connect outputs to `SoulX-Singer Generate`.
-6. Output is the generated singing voice.
+An example workflow is provided in `workflow_example.json`. You can drag and drop this file into ComfyUI to load the pipeline.
+
+1.  **SoulX-Singer Loader**: Selects the model.
+2.  **Load Audio**: Two instances, one for "Prompt" (Reference) and one for "Target" (Melody/Lyrics).
+3.  **SoulX-Singer Preprocess**:
+    *   One set to `mode="prompt"`: Extracts timbre/style from prompt audio.
+    *   One set to `mode="target"`: Extracts lyrics/melody from target audio.
+4.  **SoulX-Singer Generate**: combines the model, prompt style, and target content to generate new singing voice.
+5.  **Save Audio**: Saves the output.
+
+### Basic Steps
+1.  Load Model with `SoulX-Singer Loader`.
+
