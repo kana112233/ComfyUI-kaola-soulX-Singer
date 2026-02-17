@@ -4,37 +4,58 @@ ComfyUI nodes for [SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer), a 
 
 ## Installation
 
-1. Clone this repository into your `ComfyUI/custom_nodes` directory.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   Note: You might need to install `ffmpeg` and other system dependencies required by `SoulX-Singer`.
+1.  **Clone the repository**:
+    Navigate to your ComfyUI's `custom_nodes` directory and run:
+    ```bash
+    cd ComfyUI/custom_nodes
+    git clone https://github.com/kana112233/ComfyUI-kaola-soulX-Singer.git
+    cd ComfyUI-kaola-soulX-Singer
+    ```
 
-## Model Setup
+2.  **Install dependencies**:
+    Install the required Python packages. Note that we have resolved compatibility issues for Mac users (MPS support).
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-You need to download the models from Hugging Face and place them in the `ComfyUI/models` directory.
+## Model Download & Setup
 
-1. **SoulX-Singer Model**:
-   Download [SoulX-Singer](https://huggingface.co/Soul-AILab/SoulX-Singer) and place it in `models/soulx-singer`.
-   For example:
-   ```
-   ComfyUI/models/soulx-singer/model.pt
-   ```
-   Note: The config file `soulxsinger.yaml` is expected to be found automatically relative to the repo or model.
+You need to download two sets of models: the main **SoulX-Singer model** and the **Preprocessing models**.
 
-2. **Preprocessing Models**:
-   Download [SoulX-Singer-Preprocess](https://huggingface.co/Soul-AILab/SoulX-Singer-Preprocess) and place it in `models/soulx-singer/SoulX-Singer-Preprocess`.
-   Structure should look like:
-   ```
-   ComfyUI/models/soulx-singer/SoulX-Singer-Preprocess/
-       ├── rmvpe/
-       ├── mel-band-roformer-karaoke/
-       ├── dereverb_mel_band_roformer/
-       ├── speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/
-       ├── parakeet-tdt-0.6b-v2/
-       └── rosvot/
-   ```
+### 1. SoulX-Singer Model (Main Model)
+Download from Hugging Face: [SoulX-Singer](https://huggingface.co/Soul-AILab/SoulX-Singer)
+
+Place the files in `ComfyUI/models/soulx-singer`.
+Your directory structure should look like this:
+```
+ComfyUI/models/soulx-singer/
+├── model.pt
+├── config.yaml
+├── ... (other assets)
+```
+
+### 2. Preprocessing Models (Required for Audio Input)
+Download from Hugging Face: [SoulX-Singer-Preprocess](https://huggingface.co/Soul-AILab/SoulX-Singer-Preprocess)
+
+Place the **contents** of this repo into `ComfyUI/models/soulx-singer/SoulX-Singer-Preprocess`.
+Alternatively, you can place them in `ComfyUI/models/SoulX-Singer-Preprocess`.
+
+**Directory Structure Checklist:**
+Ensure you have these subfolders inside `ComfyUI/models/soulx-singer/SoulX-Singer-Preprocess/`:
+```
+ComfyUI/models/soulx-singer/SoulX-Singer-Preprocess/
+├── rmvpe/
+├── mel-band-roformer-karaoke/
+├── dereverb_mel_band_roformer/
+├── speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/  (for Mandarin ASR)
+├── parakeet-tdt-0.6b-v2/                                                      (for English ASR)
+└── rosvot/
+```
+**Tip:** You can use `huggingface-cli` or `hfd` to download effectively.
+```bash
+# Example using hfd script inside the target directory
+hfd Soul-AILab/SoulX-Singer-Preprocess
+```
 
 ## Nodes
 
