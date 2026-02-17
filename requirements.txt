@@ -28,7 +28,7 @@ braceexpand
 webdataset
 jiwer
 editdistance
-sentencepiece
+sentencepiece>=0.1.99
 g2p_en
 kaldiio
 resampy
@@ -42,7 +42,7 @@ pyworld
 rotary_embedding_torch
 sageattention
 scikit_learn
-scipy
+scipy<1.13.0
 six
 scikit_image
 soundfile
@@ -51,5 +51,6 @@ ToJyutping
 # torchaudio==2.2.0
 torchcodec
 tqdm
-transformers
+transformers>=4.36.0
+tokenizers>=0.15.0
 webrtcvad
