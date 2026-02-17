@@ -41,7 +41,7 @@ pyloudnorm
 pyworld
 rotary_embedding_torch
 sageattention
-scikit_learn
+scikit_learn>=1.5.0
 scipy<1.13.0
 six
 scikit_image
