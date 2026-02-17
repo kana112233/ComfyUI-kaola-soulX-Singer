@@ -1,0 +1,10 @@
+[flake8]
+exclude = 
+    .git,
+    __pycache__,
+    build,
+    dist,
+    soulx_singer_repo
+max-line-length = 127
+statistics = True
+count = True
